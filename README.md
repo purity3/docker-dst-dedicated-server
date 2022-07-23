@@ -75,7 +75,7 @@ steam 登录[keil 饥荒联机版服务器创建页](https://accounts.klei.com/a
 ### 步骤二：创建存档目录
 
 饥荒存档格式基本与本地存档一致，若已有存档目录默认读取`Cluster_1`的存档，若未生成则根据变量`DST_TEMP_CLUSTER`（默认值是`IslandAdventure`）对应的模板生成存档目录，
-如何获取存档目录请[查看详情](后面安排一个guide)，
+如何获取存档目录请[查看详情](https://dontstarve.fandom.com/zh/wiki/%E5%A4%9A%E4%BA%BA%E7%89%88%E9%A5%A5%E8%8D%92%E7%8B%AC%E7%AB%8B%E6%9C%8D%E5%8A%A1%E5%99%A8#%E5%90%AF%E5%8A%A8%E5%8F%82%E6%95%B0)，
 存档格式为
 
 ```bash
@@ -177,11 +177,22 @@ docker run -d \
 - [岛屿冒险](https://dsthainan.notion.site/dsthainan/mod-wki-8d542f1a5bf543cdbf24422a36b581e8)：高度还原单机版海难
 
 ## 后续计划
-- 提供
+- 提供服务器增加黑白名单、管理员权限运行指令
+- 单层世界开服管理，可通过创建多个容器来组成多世界
 ## 开发人员
 `purity3`
 
 ## 鸣谢
 [Jamesits](https://github.com/Jamesits)
+
 ## License
 [![License](https://img.shields.io/badge/License-GPLv2-blue?logo=license)](./License)
+
+## 参考材料
+- [
+docker-dst-server项目](https://github.com/Jamesits/docker-dst-server)
+- [What is UGC](https://forums.kleientertainment.com/forums/topic/128188-what-is-ugc/?do=findComment&comment=1440420)
+- [饥荒官方Linux搭建教程](https://forums.kleientertainment.com/forums/topic/64441-dedicated-server-quick-setup-guide-linux/)
+- [wuter搭建服务器教程](https://wuter.cn/209.html/)
+- [岛屿冒险模组](https://dsthainan.notion.site/dsthainan/mod-wki-8d542f1a5bf543cdbf24422a36b581e8)
+- [饥荒维基百科](https://dontstarve.fandom.com/zh/wiki/%E5%A4%9A%E4%BA%BA%E7%89%88%E9%A5%A5%E8%8D%92%E7%8B%AC%E7%AB%8B%E6%9C%8D%E5%8A%A1%E5%99%A8#%E5%90%AF%E5%8A%A8%E5%8F%82%E6%95%B0)
