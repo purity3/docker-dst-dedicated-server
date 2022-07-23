@@ -1,0 +1,54 @@
+#!/bin/bash
+# 322330是饥荒在steam的游戏编号
+# 重点可以看一下V1和V2Mods的区别 https://forums.kleientertainment.com/forums/topic/128188-what-is-ugc/?do=findComment&comment=1440420
+set -eu
+
+DIR_DST_MODS_SYS="${DST_SERVER_PATH}/mods"
+DIR_DST_USER_BASE="${DST_USER_DATA_PATH:-}/DoNotStarveTogether"
+DIR_DST_USER_CLUSTER="${DIR_DST_USER_BASE}/Cluster_1"
+DIR_DST_USER_MODS="${DIR_DST_USER_CLUSTER}/mods"
+DIR_DST_USER_UGC_MODS="${DST_USER_DATA_PATH:-}/ugc/content/322330"
+DIR_DST_USER_UGC_DOWNLOAD="${DST_USER_DATA_PATH:-}/ugc/downloads/322330" 
+
+# 用户端没有模组从服务端拷贝数据到用户端
+if [ ! -d "${DIR_DST_USER_MODS}" ]; then
+    echo "从DST服务端拷贝mod到用户端中..."
+    mkdir -p "${DIR_DST_USER_CLUSTER}"
+    cp -r "${DIR_DST_MODS_SYS}" "${DIR_DST_USER_MODS}"
+fi
+
+# 重建mod硬链接
+rm -rf "${DIR_DST_MODS_SYS}"
+ln -s "${DIR_DST_USER_MODS}" "${DIR_DST_MODS_SYS}"
+
+echo "更新饥荒模组..."
+
+# 尝试更新n次（默认2次），若发现系统已更新完成则退出
+for i in `seq 1 ${DST_UPDATE_TIMES:-3}`; do
+
+    if [[ $(ls ${DIR_DST_USER_MODS} | grep '^workshop-' | wc -l) -gt 0 ]] \
+    && [[ ! -d "${DIR_DST_USER_UGC_DOWNLOAD}" ]] \
+    && [[ ${i} -gt 1 ]]; then
+            break
+        else
+            # update DST Modv1
+            launchServer -only_update_server_mods
+
+            # update DST Modv2
+            su --preserve-environment \
+                --group "${DST_USER}" \
+                -c "launchServer -persistent_storage_root \"${DST_USER_DATA_PATH}\" -ugc_directory \"${DST_USER_DATA_PATH}\"/ugc -cluster Cluster_1 -only_update_server_mods" "${DST_USER}"
+    fi
+done
+
+# 拷贝V1的mod到UGCMOD路径下
+LIST_V1_MODS=$(ls ${DIR_DST_USER_MODS} | grep '^workshop-')
+for V1_MOD in ${LIST_V1_MODS}; do
+    # 怕文件夹堆叠，移除掉原有拷贝内容再复制
+    rm -rf "${DIR_DST_USER_UGC_MODS}/"$(echo ${V1_MOD} | sed 's/^workshop-//')
+    # 先把旧版workshop文件复制到ugcmod下
+    cp -rf "${DIR_DST_USER_MODS}/${V1_MOD}" \
+        "${DIR_DST_USER_UGC_MODS}/"$(echo ${V1_MOD} | sed 's/^workshop-//')
+done
+
+echo "Mod更新完毕,共$(ls -l ${DIR_DST_USER_UGC_MODS} | grep '^d' | wc -l)个mod"

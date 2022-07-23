@@ -1,0 +1,14 @@
+#!/bin/bash
+set -eu
+
+STEAMCMD_PATH=${STEAMCMD_PATH:=/opt/steamcmd/steamcmd.sh}
+DST_SERVER_PATH=${DST_SERVER_PATH:=/opt/dstserver}
+
+echo "更新游戏配置中..."
+exec "${STEAMCMD_PATH}" \
+    +@ShutdownOnFailedCommand 1 \
+    +@NoPromptForPassword 1 \
+    +login anonymous \
+    +force_install_dir "${DST_SERVER_PATH}" \
+    +app_update 343050 validate \
+    +quit

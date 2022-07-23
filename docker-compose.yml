@@ -1,0 +1,17 @@
+version: "3.5"
+services:
+  dst-server:
+    container_name: dst-server
+    build: .
+    restart: "on-failure:5"
+    ports:
+      - "10999-11000:10999-11000/udp"
+      - "12346-12347:12346-12347/udp"
+    volumes:
+      - ${DST_CLUSTERS_PATH}:/data
+    environment:
+      - DST_SERVER_ARCH=${DST_SERVER_ARCH}
+      - DST_TEMP_CLUSTER=${DST_TEMP_CLUSTER}
+      - DST_CLUSTER_TOKEN=${DST_CLUSTER_TOKEN}
+      - DST_UPDATE_TIMES=${DST_UPDATE_TIMES}
+    stop_grace_period: 6m

@@ -1,0 +1,13 @@
+ServerModSetup("374550642") --无限堆叠99
+ServerModSetup("375850593") --五格背包
+ServerModSetup("2577742416") --全球定位汉化
+ServerModSetup("2287303119") --showme汉化
+ServerModSetup("1185229307") --史诗般血条
+ServerModSetup("2274329081") --虫洞图标
+ServerModSetup("1595631294") --智能小木牌
+ServerModSetup("2505341606") --防卡两招
+ServerModSetup("2771698903") --重生中文版
+ServerModSetup("462372013") --永久新鲜
+ServerModSetup("841471368") --河蟹防熊锁
+ServerModSetup("1207269058") --简易血条
+ServerModSetup("501385076") --快速采集

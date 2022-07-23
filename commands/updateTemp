@@ -1,0 +1,64 @@
+#!/bin/bash
+set -e
+
+DIR_DST_MODS_SYS="${DST_SERVER_PATH}/mods"
+DIR_DST_TEMP_BASE=${DST_TEMP_PATH:-}
+DIR_DST_TEMP_CLUSTER="${DIR_DST_TEMP_BASE}/clusters/${DST_TEMP_CLUSTER:-Orign}"
+DIR_DST_TEMP_MODS="${DIR_DST_TEMP_BASE}/mods"
+DIR_DST_TEMP_CLUSTER_MODS="${DIR_DST_TEMP_CLUSTER}/mods"
+DIR_DST_USER_BASE="${DST_USER_DATA_PATH:-}/DoNotStarveTogether"
+DIR_DST_USER_CLUSTER="${DIR_DST_USER_BASE}/Cluster_1"
+DIR_DST_USER_MODS="${DIR_DST_USER_CLUSTER}/mods"
+FILE_DST_USER_CLUSTER_TOKEN="${DIR_DST_USER_CLUSTER}/cluster_token.txt"
+
+# 如果没有饥荒配置文件系统会复制进行更新
+if [ ! -d ${DIR_DST_USER_CLUSTER} ]; then
+
+    echo "找不到饥荒系统存档，将通过默认模版创建..."
+
+    mkdir -p "${DIR_DST_USER_CLUSTER}"
+    # 拷贝构建存档配置文件
+    cp -r ${DIR_DST_TEMP_CLUSTER}/* ${DIR_DST_USER_CLUSTER}/
+    cp -r ${DIR_DST_TEMP_BASE}/clusters/*.txt \
+        ${DIR_DST_TEMP_BASE}/clusters/*.ini \
+        ${DIR_DST_USER_CLUSTER}/
+    cp -r "${DIR_DST_TEMP_CLUSTER_MODS}/modoverrides.lua" ${DIR_DST_USER_CLUSTER}/Master
+    cp -r "${DIR_DST_TEMP_CLUSTER_MODS}/modoverrides.lua" ${DIR_DST_USER_CLUSTER}/Caves
+
+    # 合并基础安装文件和系统安装文件，记住两个dst文件有换行符
+    cat "${DIR_DST_TEMP_MODS}/dedicated_server_mods_setup.lua" "${DIR_DST_TEMP_CLUSTER_MODS}/dedicated_server_mods_setup.lua" | sort | uniq >"${DIR_DST_USER_MODS}/dedicated_server_mods_setup.lua"
+    rm -rf "${DIR_DST_USER_MODS}/modoverrides.lua"
+    touch "${FILE_DST_USER_CLUSTER_TOKEN}"
+fi
+
+# 从环境变量中获取token更新到配置文件上
+if [ -n "${DST_CLUSTER_TOKEN:-}" ]; then
+    echo "从环境变量中获取token更新到配置文件上"
+    printf "%s" "${DST_CLUSTER_TOKEN}" >"${FILE_DST_USER_CLUSTER_TOKEN}"
+fi
+
+# 校正cluster_token的文件配置格式
+if [ ! -f "${FILE_DST_USER_CLUSTER_TOKEN}" ]; then
+    echo >&2 "请把文件复制到cluster_token.txt中"
+    exit
+else
+    if [ -z "$(tail -c 1 "${FILE_DST_USER_CLUSTER_TOKEN}")" ]; then
+        mv "${FILE_DST_USER_CLUSTER_TOKEN}" /tmp/cluster_token.txt
+        tr -d '\n' </tmp/cluster_token.txt >"${FILE_DST_USER_CLUSTER_TOKEN}"
+        rm -f /tmp/cluster_token.txt
+    fi
+fi
+
+# 修正userdata相关权限
+chown -R "${DST_USER}:${DST_USER}" "${DST_USER_DATA_PATH}"
+
+# 删除链接符号并从模板中生成mod配置文件
+if [[ -L "${DIR_DST_MODS_SYS}" ]]; then
+    echo "从DST样板库中拷贝mod到服务端中..."
+    rm -f "${DIR_DST_MODS_SYS}"
+    cp -r ${DIR_DST_TEMP_CLUSTER_MODS} ${DIR_DST_MODS_SYS}
+    cat "${DIR_DST_TEMP_MODS}/dedicated_server_mods_setup.lua" \
+        "${DIR_DST_TEMP_CLUSTER_MODS}/dedicated_server_mods_setup.lua" \
+        | sort | uniq >"${DIR_DST_MODS_SYS}/dedicated_server_mods_setup.lua"
+    rm -rf "${DIR_DST_MODS_SYS}/modoverrides.lua"
+fi
