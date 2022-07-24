@@ -20,7 +20,7 @@ docker-dst-server](https://github.com/Jamesits/docker-dst-server)，个人学习
 在原版`docker-dst-server`的基础上增加了以下特点：
 
 - 🔧 优化`Klei` `V1` 和 `V2-ugcMods` mod 加载不全问题，[详情查看](https://forums.kleientertainment.com/forums/topic/128188-what-is-ugc/?do=findComment&comment=1440420)
-- 📃 提供 [岛屿冒险](./configs/clusters/IslandAdventure/) 和 [原版饥荒](./configs/clusters/Orign/)多套模板，如对 Mods 模板有改造需要，可新增目录进行替换后通过`Dockerfile`重新构建镜像，模板目录如下
+- 📃 提供 [岛屿冒险](./configs/clusters/IslandAdventure/) 和 [原版饥荒](./configs/clusters/Origin/)多套模板，如对 Mods 模板有改造需要，可新增目录进行替换后通过`Dockerfile`重新构建镜像，模板目录如下
   ```bash
   ├── clusters            # 配置模板存放地
   │   ├── YourTemplate    # 模板名称，后续作为环境变量引入
@@ -117,7 +117,7 @@ docker run -d \
     -p 12346-12347:12346-12347/udp \
     -e "DST_SERVER_ARCH=amd64" \
     -e "DST_CLUSTER_TOKEN={YourDSTClusterToken}" \
-    -e "DST_TEMP_CLUSTER={IslandAdventure|Orign|<YourAddTemp>}"
+    -e "DST_TEMP_CLUSTER={IslandAdventure|Origin|<YourAddTemp>}"
     -e "DST_UPDATE_TIMES=2" # 某些大型mod一次可能更新不完，因此提供了2次以上的更新
     -it dst-server:latest
 ```
@@ -170,7 +170,7 @@ docker run -d \
 | `DST_CLUSTERS_PATH`  | 用于标记存档位置，路径使用绝对路径                                                |    ✅     |  `null`  |
 | `DST_SERVER_ARCH`    | 根据Linux系统版决定启动使用`/bin`还是`/bin64`                                     |          |  `x86`   |
 | `DST_CLUSTERS_TOKEN` | 服务器令牌，启运行服务器的关键                                                    |    ✅     |  `null`  |
-| ` DST_TEMP_CLUSTER`  | 没有设置存档时默认加载的模板，默认有`IslandAdventure` `Orign`                     |          | `Orign`  |
+| ` DST_TEMP_CLUSTER`  | 没有设置存档时默认加载的模板，默认有`IslandAdventure` `Origin`                    |          | `Origin` |
 | ` DST_UPDATE_TIMES`  | 每次启动前服务器需要更新mod 的频次，建议最少为3，低于3可能mod未下载全就启动服务器 |          |   `3`    |
 ## 游戏模板
 项目预装热门模组，用户按需使用，注意`mod兼容情况`
